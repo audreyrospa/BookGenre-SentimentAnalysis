@@ -1,0 +1,61 @@
+---
+title: "Project"
+author: "Maulana"
+date: "2022-11-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(here)
+library(vroom)
+library(tidyverse)
+library(syuzhet)
+library(tidytext)
+
+getwd()
+setwd("/Users/audrey/FinalProjectPracDS")
+```
+
+```{r}
+raw <- vroom(here("data-raw","bookgenres.csv"))
+raw <- raw %>% anti_join(stop_words)
+synopsis <- tolower(as.character(raw$synopsis))
+synopsis <- gsub("[[:punct:]]", " ", synopsis)
+synopsis <- gsub("[[:digit:]]", " ", synopsis)
+synopsis <- gsub("\n", " ", synopsis)
+synopsis <- gsub("^\\s+", "", synopsis)
+synopsis <- gsub("\\s+$", "", synopsis)
+synopsis <- gsub("[ |\t]+", " ", synopsis)
+
+tibble <- as.tibble(synopsis)
+
+afinn <- get_sentiment(tibble$value, method="afinn")
+
+afinn
+```
+
+```{r}
+sentiment2 <- cbind(tibble$value,afinn)
+sentiment2 <- as.data.frame(sentiment2)
+sentiment2 <- add_column(sentiment2, emotion=NA)
+sentiment2$emotion <- ifelse(sentiment2$sentiment>0,"positive",ifelse(sentiment2$sentiment<0,"negative","neutral"))
+sentiment3 <- as.data.frame(sentiment)
+sentiment3 <- add_column(sentiment3,positive=0,negative=0,neutral=0)
+sentiment3$positive <- ifelse(sentiment3$sentiment > 0,1,0)
+sentiment3$negative <- ifelse(sentiment3$sentiment < 0,1,0)
+sentiment3$neutral <- ifelse(sentiment3$sentiment == 0,1,0)
+```
+
+```{r}
+sentiment3 = sentiment3[2:4]
+```
+
+
+```{r}
+barplot(colSums(sentiment3))
+```
+
