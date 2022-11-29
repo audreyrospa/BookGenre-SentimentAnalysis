@@ -21,8 +21,7 @@ setwd("/Users/audrey/FinalProjectPracDS")
 ```
 
 ```{r}
-raw <- vroom(here("data-raw","bookgenres.csv"))
-raw <- raw %>% anti_join(stop_words)
+raw <- vroom(here("/Users/audrey/FinalProjectPracDS/data-raw/bookgenres.csv"))
 synopsis <- tolower(as.character(raw$synopsis))
 synopsis <- gsub("[[:punct:]]", " ", synopsis)
 synopsis <- gsub("[[:digit:]]", " ", synopsis)
